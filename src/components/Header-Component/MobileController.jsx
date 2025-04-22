@@ -1,7 +1,7 @@
 // File: components/MobileController.jsx
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Search as SearchIcon, Menu, X } from 'lucide-react';

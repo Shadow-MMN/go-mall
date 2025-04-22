@@ -1,8 +1,9 @@
 // File: components/Header.jsx
 import { Heart, ShoppingCart } from 'lucide-react';
-import MobileController from './MobileController';
-import DesktopNavigation from './DesktopNavigation';
-import DesktopSearch from './DesktopSearch';
+import MobileController from './Header-Component/MobileController';
+import DesktopNavigation from './Header-Component/DesktopNavigation';
+import DesktopSearch from './Header-Component/DesktopSearch';
+import UserDropdown from './Header-Component/UserDropdown';
 
 export default function Header() {
   return (
@@ -22,9 +23,12 @@ export default function Header() {
         {/* Desktop Search Component */}
         <DesktopSearch />
         
-        {/* Icon buttons (remains in server component) */}
+        {/* Icon buttons */}
         <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-black" aria-label="Favorite" />
         <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" aria-label="Cart" />
+        
+        {/* User Dropdown */}
+        <UserDropdown />
       </div>
     </div>
   );
