@@ -1,6 +1,7 @@
 // import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import TopHeader from "@/components/Top-Header";
+import Header from "@/components/Header";
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
 //   subsets: ["latin"],
@@ -22,10 +23,10 @@ import TopHeader from "@/components/Top-Header";
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className>
-        <header>
-          <TopHeader />
+      <body>
+      <TopHeader />
+        <header >
+          <Header/>
         </header>
         {children}
       </body>
