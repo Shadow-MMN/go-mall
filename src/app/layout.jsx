@@ -3,6 +3,8 @@ import "./globals.css";
 import TopHeader from "@/components/Top-Header";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Loading from "./loading";
+import { Suspense } from 'react';
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
 //   subsets: ["latin"],
@@ -34,7 +36,9 @@ export default function RootLayout({ children }) {
 
         {/* Main content that grows */}
         <main className="flex-1">
-          {children}
+          <Suspense fallback={<Loading/>}>
+            {children}
+          </Suspense>
         </main>
 
         {/* Footer at the bottom */}
