@@ -1,4 +1,3 @@
-// File: components/MobileController.jsx
 'use client';
 
 import { useState, useRef } from 'react';
@@ -13,7 +12,6 @@ export default function MobileController() {
 
   const openMenuAndFocusSearch = () => {
     setIsMobileMenuOpen(true);
-    // Focus the search input after a short delay to ensure the menu is open
     setTimeout(() => {
       searchInputRef.current?.focus();
     }, 300);
@@ -21,7 +19,6 @@ export default function MobileController() {
 
   return (
     <>
-      {/* Mobile Menu Button */}
       <div className='flex items-center gap-4 md:hidden'>
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -35,12 +32,11 @@ export default function MobileController() {
         </button>
       </div>
 
-      {/* Mobile Search Button */}
+     
       <button className="sm:hidden" onClick={openMenuAndFocusSearch}>
         <SearchIcon className="w-5 h-5 text-gray-700" />
       </button>
 
-      {/* Mobile Menu Panel */}
       <div className={`md:hidden fixed top-0 left-0 w-full h-full z-50 bg-white transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-4">
           <div className="flex justify-between items-center mb-8">
@@ -52,8 +48,6 @@ export default function MobileController() {
               <X className="w-6 h-6" />
             </button>
           </div>
-
-          {/* Mobile Navigation Links */}
           <nav className="font-medium">
             <ul className="flex flex-col gap-6 text-lg">
               <li>
