@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 export default function SignUp(){
     return(
-        <main className="flex flex-col md:flex-row items-center justify-center min-h-screen gap-6 px-4 py-10">
+        <section className="flex flex-col md:flex-row items-center justify-center min-h-screen gap-6 px-4 py-10">
             {/* Left column (image) - 2/3 width */}
             <div className="w-full md:w-2/3 h-full flex justify-center items-center">
                 <Image 
@@ -35,6 +35,6 @@ export default function SignUp(){
                     <Link href="/login" className="text-sm text-blue-600 hover:underline">Log in</Link>
                 </div>
             </div>
-        </main>
+        </section>
     )
 }
