@@ -48,7 +48,7 @@ export default function MobileController() {
               <X className="w-6 h-6" />
             </button>
           </div>
-          <nav className="font-medium">
+          <nav className="font-medium ">
             <ul className="flex flex-col gap-6 text-lg">
               <li>
                 <Link href="/" className={`block py-2 ${pathname === '/' ? 'border-b border-black pb-1' : ''}`}>Home</Link>
