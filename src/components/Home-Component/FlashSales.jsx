@@ -267,7 +267,7 @@ export default function FlashSales(){
                 </div>
             </div>
             <div className="flex items-center justify-center">
-                <Link href='/products' className="bg-red-500 text-white px-6 py-2 rounded hover:bg-gray-800 transition-all duration-200">
+                <Link href='/products' className="bg-red-500 text-white px-6 py-2 rounded hover:bg-white hover:text-red-500  hover:border-red-500 hover:border transition-all duration-200">
                 View All Products
                 </Link>
             </div>
