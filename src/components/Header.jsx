@@ -17,7 +17,7 @@ export default function Header() {
       <div className='flex items-center gap-2 sm:gap-4'>
         <DesktopSearch />
         <Link href="/wishlist" aria-label="Go to Wishlist">
-            <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
+            <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-black hover:fill-red-500" />
         </Link>
         <Link href="/cart" aria-label="Go to Cart">
             <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
