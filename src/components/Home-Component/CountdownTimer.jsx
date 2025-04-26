@@ -7,19 +7,6 @@ export default function CountdownTimer({
   restartDuration = 3 * 24 * 60 * 60 * 1000, // 3 days
   onComplete = () => {} 
 }) {
-  // Refs to store props without triggering re-renders
-  const targetDateRef = useRef(targetDate);
-  const restartOnCompleteRef = useRef(restartOnComplete);
-  const restartDurationRef = useRef(restartDuration);
-  const onCompleteRef = useRef(onComplete);
-  
-  // Flag to track if timer is complete in current cycle
-  const isCompletedRef = useRef(false);
-  
-  // Store the end date as a ref
-  const endDateRef = useRef(null);
-  
-  // Time left state
   const [timeLeft, setTimeLeft] = useState({
     days: '00',
     hours: '00',
@@ -27,103 +14,85 @@ export default function CountdownTimer({
     seconds: '00'
   });
   
-  // Initialize the end date only once on mount
-  useEffect(() => {
-    endDateRef.current = targetDateRef.current 
-      ? new Date(targetDateRef.current) 
-      : new Date(Date.now() + restartDurationRef.current);
-  }, []);
+  // Use useRef to persist values without causing re-renders
+  const endDateRef = useRef(
+    targetDate ? new Date(targetDate) : new Date(Date.now() + restartDuration)
+  );
   
-  // Update refs when props change
-  useEffect(() => {
-    targetDateRef.current = targetDate;
-    
-    // Only reset the end date if the targetDate actually changed
-    if (targetDate && targetDate !== targetDateRef.current) {
-      endDateRef.current = new Date(targetDate);
-      isCompletedRef.current = false;
-    }
-  }, [targetDate]);
+  // Use a ref to track completion to avoid re-renders
+  const completedRef = useRef(false);
   
-  useEffect(() => {
-    restartOnCompleteRef.current = restartOnComplete;
-  }, [restartOnComplete]);
-  
-  useEffect(() => {
-    restartDurationRef.current = restartDuration;
-  }, [restartDuration]);
-  
+  // Store callback in a ref to avoid dependency changes
+  const onCompleteRef = useRef(onComplete);
   useEffect(() => {
     onCompleteRef.current = onComplete;
   }, [onComplete]);
   
-  // The main timer effect - with empty dependency array
+  // Store restart settings in refs
+  const restartOnCompleteRef = useRef(restartOnComplete);
+  const restartDurationRef = useRef(restartDuration);
+  
   useEffect(() => {
-    // Make sure end date is initialized
-    if (!endDateRef.current) {
-      endDateRef.current = targetDateRef.current 
-        ? new Date(targetDateRef.current) 
-        : new Date(Date.now() + restartDurationRef.current);
+    restartOnCompleteRef.current = restartOnComplete;
+    restartDurationRef.current = restartDuration;
+  }, [restartOnComplete, restartDuration]);
+  
+  // Handle initial targetDate changes
+  useEffect(() => {
+    if (targetDate) {
+      endDateRef.current = new Date(targetDate);
+      completedRef.current = false;
     }
-    
+  }, [targetDate]);
+
+  useEffect(() => {
     const calculateTimeLeft = () => {
       const now = new Date();
       const difference = endDateRef.current - now;
-      
+
       if (difference <= 0) {
-        // Timer completed
         setTimeLeft({
           days: '00',
           hours: '00',
           minutes: '00',
           seconds: '00'
         });
-        
+
         // Only call onComplete once per countdown cycle
-        if (!isCompletedRef.current) {
-          isCompletedRef.current = true;
-          
-          // Call onComplete callback
-          if (onCompleteRef.current) {
-            onCompleteRef.current();
-          }
-          
-          // If restart is enabled, set a new end date
+        if (!completedRef.current) {
+          completedRef.current = true;
+          onCompleteRef.current();
+
           if (restartOnCompleteRef.current) {
-            setTimeout(() => {
-              endDateRef.current = new Date(Date.now() + restartDurationRef.current);
-              isCompletedRef.current = false;
-            }, 1000); // Slight delay to prevent immediate recalculation
+            // Set a new end date for restart
+            endDateRef.current = new Date(Date.now() + restartDurationRef.current);
+            completedRef.current = false;
           }
         }
-      } else {
-        // Timer still counting
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((difference / 1000 / 60) % 60);
-        const seconds = Math.floor((difference / 1000) % 60);
         
-        setTimeLeft({
-          days: days.toString().padStart(2, '0'),
-          hours: hours.toString().padStart(2, '0'),
-          minutes: minutes.toString().padStart(2, '0'),
-          seconds: seconds.toString().padStart(2, '0')
-        });
+        return;
       }
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / 1000 / 60) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+
+      setTimeLeft({
+        days: days.toString().padStart(2, '0'),
+        hours: hours.toString().padStart(2, '0'),
+        minutes: minutes.toString().padStart(2, '0'),
+        seconds: seconds.toString().padStart(2, '0')
+      });
     };
-    
-    // Calculate immediately
-    calculateTimeLeft();
-    
-    // Set up interval
-    const timerInterval = setInterval(calculateTimeLeft, 1000);
-    
-    // Clean up
-    return () => {
-      clearInterval(timerInterval);
-    };
-  }, []); // Empty dependency array is intentional
-  
+
+    calculateTimeLeft(); // run once immediately
+
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer);
+  }, []); // Empty dependency array as we're using refs for dynamic values
+
   return (
     <div className="flex items-center justify-center p-6 font-sans">
       <div className="flex items-center">
