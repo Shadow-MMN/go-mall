@@ -15,6 +15,9 @@ export default function DesktopNavigation() {
             <Link href="/" className={`${pathname === '/' ? 'border-b border-black pb-1' : ''}`}>Home</Link>
           </li>
           <li>
+            <Link href="/products" className={`${pathname === '/products' ? 'border-b border-black pb-1' : ''}`}>Products</Link>
+          </li>
+          <li>
             <Link href="/contact" className={`${pathname === '/contact' ? 'border-b border-black pb-1' : ''}`}>Contact</Link>
           </li>
           <li>

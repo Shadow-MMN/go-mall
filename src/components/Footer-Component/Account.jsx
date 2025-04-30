@@ -27,7 +27,7 @@ export default function Account() {
                     </Link>
                 </li>
                 <li>
-                    <Link href="/shop" className="text-gray-600 hover:text-gray-800">
+                    <Link href="/products" className="text-gray-600 hover:text-gray-800">
                         Shop
                     </Link>
                 </li>

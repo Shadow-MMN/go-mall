@@ -85,7 +85,9 @@ export default async function ExploreOurProducts() {
               <div className="absolute top-3 right-3 flex flex-col gap-2">
                 <WishlistButton product={product} />
                 <div className="bg-white rounded-full p-2 w-10 h-10 flex items-center justify-center shadow">
-                  <Eye className="text-black w-5 h-5" />
+                  <Link href={`/products/${product.id}`}>
+                    <Eye className="text-black w-5 h-5" />
+                  </Link>
                 </div>
               </div>
 
@@ -139,7 +141,9 @@ export default async function ExploreOurProducts() {
               <div className="absolute top-3 right-3 flex flex-col gap-2">
                 <WishlistButton product={product} />
                 <div className="bg-white rounded-full p-2 w-10 h-10 flex items-center justify-center shadow">
-                  <Eye className="text-black w-5 h-5" />
+                  <Link href={`/products/${product.id}`}>
+                    <Eye className="text-black w-5 h-5" />
+                  </Link>
                 </div>
               </div>
 

@@ -54,6 +54,9 @@ export default function MobileController() {
                 <Link href="/" className={`block py-2 ${pathname === '/' ? 'border-b border-black pb-1' : ''}`}>Home</Link>
               </li>
               <li>
+                <Link href="/product" className={`block py-2 ${pathname === '/products' ? 'border-b border-black pb-1' : ''}`}>Products</Link>
+              </li>
+              <li>
                 <Link href="/contact" className={`block py-2 ${pathname === '/contact' ? 'border-b border-black pb-1' : ''}`}>Contact</Link>
               </li>
               <li>

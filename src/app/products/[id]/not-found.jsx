@@ -10,7 +10,7 @@ export default function ProductNotFound() {
           <ShoppingBag className="w-10 h-10 text-gray-500" />
         </div>
         
-        <h1 className="text-3xl font-bold mb-4">Product Not Found</h1>
+        <h1 className="text-3xl font-bold mb-4 text-red-500">Product Not Found</h1>
         
         <p className="text-gray-600 mb-8">
           Oops! The product you're looking for doesn't exist in our catalog.
@@ -20,7 +20,7 @@ export default function ProductNotFound() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/products"
-            className="flex items-center justify-center gap-2 bg-black text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-colors"
+            className="flex items-center justify-center gap-2 bg-red-500 text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Products

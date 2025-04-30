@@ -46,13 +46,10 @@ export default function UserDropdown() {
           <Link href="/account" className="block px-4 py-2 text-sm text-white hover:text-black hover:bg-gray-100">
             Manage my account
           </Link>
-          <Link href="/orders" className="block px-4 py-2 text-sm text-white hover:text-black hover:bg-gray-100">
+          <Link href="/cart" className="block px-4 py-2 text-sm text-white hover:text-black hover:bg-gray-100">
             My orders
           </Link>
-          <Link href="/cancellations" className="block px-4 py-2 text-sm text-white hover:text-black hover:bg-gray-100">
-            My cancellations
-          </Link>
-          <Link href="/reviews" className="block px-4 py-2 text-sm text-white hover:text-black hover:bg-gray-100">
+          <Link href="/wishlist" className="block px-4 py-2 text-sm text-white hover:text-black hover:bg-gray-100">
             My reviews
           </Link>
           <Link href="/logout" className="block px-4 py-2 text-sm text-white hover:text-black hover:bg-gray-100">
