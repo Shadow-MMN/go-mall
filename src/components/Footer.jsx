@@ -6,7 +6,7 @@ import DownloadApp from "./Footer-Component/DownloadApp"
 export default function Footer(){
     return(
         <>
-            <div className="bg-black text-white flex flex-col md:flex-row justify-between p-3">
+            <div className="bg-black text-white flex flex-col md:flex-row justify-between p-3 md:py-6 md:px-8">
                 <div>
                     <Exclusive />
                 </div>

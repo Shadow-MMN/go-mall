@@ -7,7 +7,7 @@ export default function Contact(){
                 {/* Left Column - 1/3 */}
                 <div className="lg:w-1/3 w-full shadow-md flex flex-col gap-6 p-6 bg-white rounded">
                 {/* First Div with border-bottom */}
-                <div className="flex flex-col items-center text-center gap-3 pb-6 relative">
+                <div className="flex flex-col items-start text-center gap-3 pb-6 relative">
                     <div className="flex items-center gap-3">
                     <Image
                         src="/call-icon.png"
@@ -25,7 +25,7 @@ export default function Contact(){
                 </div>
         
                 {/* Second Div */}
-                <div className="flex flex-col items-center text-center gap-3">
+                <div className="flex flex-col items-start text-center gap-3">
                     <div className="flex items-center gap-3">
                     <Image
                         src="/email-icon.png"
