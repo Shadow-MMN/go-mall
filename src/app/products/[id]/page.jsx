@@ -5,6 +5,45 @@ import { ArrowLeft, Star, ShoppingCart } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import AddToCartButton from './AddToCartButton';
 
+
+export async function generateMetadata({ params }) {
+  const { id } = await params
+  const productId = parseInt(id);
+
+  if (productId > 20) {
+    return {
+      title: 'Product Not Found',
+      description: 'The product you are looking for does not exist.',
+    };
+  }
+
+  try {
+    const res = await fetch(`https://fakestoreapi.com/products/${id}`);
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch product');
+    }
+
+    const product = await res.json();
+
+    return {
+      title: product.title,
+      description: product.description,
+      openGraph: {
+        title: product.title,
+        description: product.description,
+        images: [product.image],
+      },
+    };
+  } catch (error) {
+    return {
+      title: 'Product Not Found',
+      description: 'The product you are looking for does not exist.',
+    };
+  }
+}
+
+
 async function getProduct(id) {
   try {
     const res = await fetch(`https://fakestoreapi.com/products/${id}`);
@@ -22,12 +61,13 @@ async function getProduct(id) {
 
 export default async function ProductDetailPage({ params }) {
   // Check if id is greater than 20, if so, trigger the not-found page
-  const productId = parseInt(params.id);
+  const { id } = await params
+  const productId = parseInt(id);
   if (productId > 20) {
     notFound();
   }
   
-  const product = await getProduct(params.id);
+  const product = await getProduct(id);
   
   if (!product) {
     notFound();

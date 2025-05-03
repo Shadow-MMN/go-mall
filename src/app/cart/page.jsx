@@ -1,6 +1,11 @@
 // app/cart/page.jsx
 import CartContent from './CartContent';
 
+export const metadata = {
+  title: 'Cart',
+  description: 'Your shopping cart',
+};
+
 async function getProducts() {
   const res = await fetch('https://fakestoreapi.com/products');
   

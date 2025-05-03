@@ -31,7 +31,7 @@ export default function CategoriesSecond(){
             <Image
                 src="/jbl.png"
                 alt="A black JBL BoomBox"
-                layout="fill"
+                fill
                 className="md:rounded-r-2xl object-cover"
             />
             </div>

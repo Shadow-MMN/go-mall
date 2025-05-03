@@ -4,6 +4,11 @@ import Link from 'next/link';
 import { ShoppingCart } from 'lucide-react';
 
 
+export const metadata = {
+  title: 'Products',
+  description: 'Explore our range of products',
+};
+
 async function getProducts() {
   const res = await fetch('https://fakestoreapi.com/products');
   

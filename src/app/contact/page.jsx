@@ -1,4 +1,10 @@
 import Image from "next/image"
+
+export const metadata = {
+    title: "Contact Us",
+    description: "Get in touch with us for any inquiries or support.",
+};
+
 export default function Contact(){
     return(
         <section className="flex justify-center items-center min-h-screen p-4">

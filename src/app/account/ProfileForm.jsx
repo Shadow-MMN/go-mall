@@ -28,10 +28,8 @@ export default function ProfileForm({ initialUserData }) {
 
   const handleSaveChanges = (e) => {
     e.preventDefault();
-    // Here you would implement your save logic
-    // For example, making an API call to update the user profile
     console.log('Saving changes:', { userData, passwords });
-    // Could add validation and success/error messaging here
+
   };
 
   return (

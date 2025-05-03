@@ -5,6 +5,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import WishlistProvider, { useWishlist } from './WishlistProvider';
 
+
+
+export const metadata = {
+  title: 'My Wishlist',
+  description: 'View and manage your wishlist items',
+};
 // The actual content component that uses the wishlist data
 function WishlistContent() {
   const { wishlistItems, removeFromWishlist, isLoading } = useWishlist();
