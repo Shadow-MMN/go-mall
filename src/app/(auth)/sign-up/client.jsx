@@ -1,19 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
 export default function SignUpForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [name, setName] = useState('');
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [redirectPath, setRedirectPath] = useState('/');
+
+  // Get redirect path from URL parameters on component mount
+  useEffect(() => {
+    const redirect = searchParams.get('redirect');
+    if (redirect) {
+      setRedirectPath(redirect);
+    }
+  }, [searchParams]);
 
   const handleSignUp = async () => {
     setError('');
@@ -27,18 +37,19 @@ export default function SignUpForm() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, emailOrPhone, password);
       const user = userCredential.user;
-      setName("")
+      setName("");
       setEmailOrPhone("");
       setPassword("");
       setSuccess('Account created successfully!');
       console.log('User:', user);
-      router.push('/');
+      
+      // Redirect to the path stored from query parameters or to homepage
+      router.push(redirectPath);
     } catch (err) {
       setError(err.message);
     }
   };
   
-
   const handleGoogleSignUp = async () => {
     setError('');
     setSuccess('');
@@ -48,7 +59,9 @@ export default function SignUpForm() {
       const user = result.user;
       setSuccess('Signed in with Google!');
       console.log('Google User:', user);
-      router.push('/products'); // 🔁 Redirect after Google sign-in
+      
+      // Redirect to the path stored from query parameters or to products page
+      router.push(redirectPath);
     } catch (err) {
       setError(err.message);
     }
@@ -71,6 +84,9 @@ export default function SignUpForm() {
       <div className="w-full md:w-1/3 flex flex-col gap-4 bg-white p-6 rounded">
         <h2 className="text-2xl font-semibold text-left">Create an account</h2>
         <p className="text-left text-gray-600">Enter your details below</p>
+        {redirectPath !== '/' && (
+          <p className="text-sm text-red-500">Create an account to complete your purchase</p>
+        )}
 
         <input
           type="text"
@@ -114,7 +130,10 @@ export default function SignUpForm() {
 
         <div className="flex items-center justify-center gap-2">
           <p className="text-sm text-gray-600">Already have an account?</p>
-          <Link href="/login" className="text-sm text-blue-600 hover:underline">
+          <Link 
+            href={`/login${redirectPath !== '/' ? `?redirect=${encodeURIComponent(redirectPath)}` : ''}`}
+            className="text-sm text-blue-600 hover:underline"
+          >
             Log in
           </Link>
         </div>

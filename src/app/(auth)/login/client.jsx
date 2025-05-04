@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase'; // Adjust this path to your Firebase config
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export const metadata = {
   title: "Log in",
@@ -14,9 +14,19 @@ export const metadata = {
 
 export default function Login() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [redirectPath, setRedirectPath] = useState('/');
+
+  // Get redirect path from URL parameters on component mount
+  useEffect(() => {
+    const redirect = searchParams.get('redirect');
+    if (redirect) {
+      setRedirectPath(redirect);
+    }
+  }, [searchParams]);
 
   const handleLogin = async () => {
     setError('');
@@ -24,7 +34,9 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, emailOrPhone, password);
       setEmailOrPhone('');
       setPassword('');
-      router.push('/'); // redirect to homepage or dashboard
+      
+      // Redirect to the path stored from query parameters or to homepage
+      router.push(redirectPath);
     } catch (err) {
       setError('Invalid credentials. Please try again.');
       console.error('Login error:', err);
@@ -49,6 +61,9 @@ export default function Login() {
         <div>
           <h2 className="text-2xl font-semibold text-left">Log in to Exclusive</h2>
           <p className="text-left text-gray-600">Enter your details below</p>
+          {redirectPath !== '/' && (
+            <p className="text-sm text-red-500 mt-2">Sign in to complete your purchase</p>
+          )}
         </div>
 
         <input
@@ -80,10 +95,13 @@ export default function Login() {
           </Link>
         </div>
 
-        {/* Sign up prompt */}
+        {/* Sign up prompt with redirect parameter */}
         <div className="flex items-center justify-center gap-2">
           <p className="text-sm text-gray-600">Don't have an account?</p>
-          <Link href="/sign-up" className="text-sm text-blue-600 hover:underline">
+          <Link 
+            href={`/sign-up${redirectPath !== '/' ? `?redirect=${encodeURIComponent(redirectPath)}` : ''}`} 
+            className="text-sm text-blue-600 hover:underline"
+          >
             Sign up
           </Link>
         </div>

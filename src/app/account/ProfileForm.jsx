@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-
+import { updateProfile, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
+import { auth} from '@/lib/firebase';
 export default function ProfileForm({ initialUserData }) {
   const [userData, setUserData] = useState(initialUserData);
   const [passwords, setPasswords] = useState({
@@ -26,10 +27,103 @@ export default function ProfileForm({ initialUserData }) {
     }));
   };
 
-  const handleSaveChanges = (e) => {
+  const handleSaveChanges = async(e) => {
     e.preventDefault();
-    console.log('Saving changes:', { userData, passwords });
-
+    let successMessage = "Profile updated successfully!";
+    let hasPasswordChange = false;
+    let hasProfileChange = false;
+    
+    try {
+      // Update display name
+      if (userData.firstName !== initialUserData.firstName || 
+          userData.lastName !== initialUserData.lastName) {
+        await updateProfile(auth.currentUser, {
+          displayName: `${userData.firstName} ${userData.lastName}`
+        });
+        hasProfileChange = true;
+      }
+      
+      // Update email if changed
+      if (userData.email !== initialUserData.email) {
+        await updateEmail(auth.currentUser, userData.email);
+        hasProfileChange = true;
+      }
+      
+      // Handle password change if new password provided
+      if (passwords.newPassword) {
+        if (passwords.newPassword !== passwords.confirmNewPassword) {
+          alert("New passwords do not match");
+          return;
+        }
+        
+        if (passwords.newPassword.length < 6) {
+          alert("Password must be at least 6 characters");
+          return;
+        }
+        
+        // Re-authenticate user before changing password
+        try {
+          const credential = EmailAuthProvider.credential(
+            auth.currentUser.email,
+            passwords.currentPassword
+          );
+          await reauthenticateWithCredential(auth.currentUser, credential);
+          
+          // Change password
+          await updatePassword(auth.currentUser, passwords.newPassword);
+          hasPasswordChange = true;
+          
+          // Clear password fields
+          setPasswords({
+            currentPassword: '',
+            newPassword: '',
+            confirmNewPassword: ''
+          });
+        } catch (error) {
+          if (error.code === 'auth/wrong-password') {
+            alert("Current password is incorrect");
+          } else {
+            alert(`Authentication error: ${error.message}`);
+          }
+          return;
+        }
+      }
+      
+      // Handle address update (would typically store in Firestore or another database)
+      if (userData.address !== initialUserData.address) {
+        // Example: Update address in Firestore
+        // const userDocRef = doc(db, "users", auth.currentUser.uid);
+        // await updateDoc(userDocRef, { address: userData.address });
+        hasProfileChange = true;
+      }
+      
+      // Show appropriate success message
+      if (hasPasswordChange && hasProfileChange) {
+        successMessage = "Profile and password updated successfully!";
+      } else if (hasPasswordChange) {
+        successMessage = "Password updated successfully!";
+      } else if (hasProfileChange) {
+        successMessage = "Profile updated successfully!";
+      } else {
+        successMessage = "No changes detected";
+      }
+      
+      alert(successMessage);
+      
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      
+      // Handle specific error cases
+      if (error.code === 'auth/requires-recent-login') {
+        alert("For security reasons, please log out and log back in before changing your password");
+      } else if (error.code === 'auth/email-already-in-use') {
+        alert("Email is already in use by another account");
+      } else if (error.code === 'auth/invalid-email') {
+        alert("Please provide a valid email address");
+      } else {
+        alert(`Error updating profile: ${error.message}`);
+      }
+    }
   };
 
   return (

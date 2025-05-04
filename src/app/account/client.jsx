@@ -43,7 +43,6 @@ export default function AccountClient() {
           Welcome! {userData.firstName} {userData.lastName}
         </div>
       </div>
-
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-64 flex-shrink-0">
           <h2 className="font-bold text-lg mb-4">Manage My Account</h2>

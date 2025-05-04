@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import Firebase auth
 
 export default function CheckoutForm() {
   const router = useRouter();
@@ -11,6 +12,7 @@ export default function CheckoutForm() {
   const [availableProducts, setAvailableProducts] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [couponCode, setCouponCode] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Add authentication state
   
   // Form state
   const [formData, setFormData] = useState({
@@ -25,6 +27,25 @@ export default function CheckoutForm() {
   });
   
   const [saveInfo, setSaveInfo] = useState(true);
+
+  // Check authentication status on component mount
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user);
+      
+      // If user is authenticated, we can pre-fill some data
+      if (user && user.email) {
+        setFormData(prevData => ({
+          ...prevData,
+          emailAddress: user.email || prevData.emailAddress
+        }));
+      }
+    });
+    
+    // Clean up subscription
+    return () => unsubscribe();
+  }, []);
 
   // Load cart and products from localStorage on component mount
   useEffect(() => {
@@ -81,6 +102,14 @@ export default function CheckoutForm() {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // If not authenticated, redirect to login page
+      alert('Please sign in to complete your order');
+      router.push('/login?redirect=/cart/checkout'); // Redirect to login with return URL
+      return;
+    }
     
     // Save billing info if checkbox is checked
     if (saveInfo) {
@@ -372,10 +401,26 @@ export default function CheckoutForm() {
         {/* Place Order Button */}
         <button
           onClick={handleSubmit}
-          className="w-full bg-red-500 text-white py-3 rounded font-medium hover:bg-red-600 transition-colors"
+          className={`w-full py-3 rounded font-medium transition-colors ${
+            isAuthenticated 
+              ? "bg-red-500 text-white hover:bg-red-600" 
+              : "bg-gray-300 text-gray-600 cursor-not-allowed"
+          }`}
         >
-          Place Order
+          {isAuthenticated ? "Place Order" : "Sign in to Place Order"}
         </button>
+        
+        {/* Authentication notice */}
+        {!isAuthenticated && (
+          <p className="text-sm text-gray-600 mt-2 text-center">
+            Please <button 
+              onClick={() => router.push('/login?redirect=/cart/checkout')}
+              className="text-red-500 underline"
+            >
+              sign in
+            </button> to complete your purchase
+          </p>
+        )}
       </div>
     </div>
   );
