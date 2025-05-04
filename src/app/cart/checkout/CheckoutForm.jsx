@@ -13,6 +13,7 @@ export default function CheckoutForm() {
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [couponCode, setCouponCode] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Add authentication state
+  const [formErrors, setFormErrors] = useState({}); // Add state for validation errors
   
   // Form state
   const [formData, setFormData] = useState({
@@ -97,11 +98,57 @@ export default function CheckoutForm() {
       ...formData,
       [name]: value
     });
+    
+    // Clear error for this field when user types
+    if (formErrors[name]) {
+      setFormErrors({
+        ...formErrors,
+        [name]: ''
+      });
+    }
+  };
+
+  // Validate form fields
+  const validateForm = () => {
+    const errors = {};
+    const requiredFields = ['firstName', 'lastName', 'streetAddress', 'townCity', 'phoneNumber', 'emailAddress'];
+    
+    requiredFields.forEach(field => {
+      if (!formData[field].trim()) {
+        errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')} is required`;
+      }
+    });
+    
+    // Additional validation for email format
+    if (formData.emailAddress && !/\S+@\S+\.\S+/.test(formData.emailAddress)) {
+      errors.emailAddress = 'Please enter a valid email address';
+    }
+    
+    // Validate phone number (simple validation, adjust as needed)
+    if (formData.phoneNumber && !/^[0-9-+\s()]{7,}$/.test(formData.phoneNumber)) {
+      errors.phoneNumber = 'Please enter a valid phone number';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Validate form first
+    const isValid = validateForm();
+    if (!isValid) {
+      // Scroll to the first error element
+      const firstErrorField = Object.keys(formErrors)[0];
+      const errorElement = document.getElementById(firstErrorField);
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        errorElement.focus();
+      }
+      return;
+    }
     
     // Check if user is authenticated
     if (!isAuthenticated) {
@@ -132,6 +179,12 @@ export default function CheckoutForm() {
     setCouponCode('');
   };
 
+  // Check if all required fields are filled to enable the place order button
+  const isFormComplete = () => {
+    const requiredFields = ['firstName', 'lastName', 'streetAddress', 'townCity', 'phoneNumber', 'emailAddress'];
+    return requiredFields.every(field => formData[field].trim() !== '');
+  };
+
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
@@ -154,12 +207,15 @@ export default function CheckoutForm() {
     );
   }
 
+  // Determine if the Place Order button should be enabled based on form completion and authentication
+  const isOrderButtonEnabled = isAuthenticated && isFormComplete();
+
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       {/* Billing Details Form */}
       <div className="lg:w-2/3">
         <h2 className="text-xl font-semibold mb-6">Billing Details</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
               <label className="block text-sm mb-1" htmlFor="firstName">
@@ -172,8 +228,13 @@ export default function CheckoutForm() {
                 required
                 value={formData.firstName}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded bg-gray-50"
+                className={`w-full p-3 border ${formErrors.firstName ? 'border-red-500' : 'border-gray-300'} rounded bg-gray-50`}
+                aria-invalid={!!formErrors.firstName}
+                aria-describedby={formErrors.firstName ? "firstName-error" : undefined}
               />
+              {formErrors.firstName && (
+                <p id="firstName-error" className="text-red-500 text-sm mt-1">{formErrors.firstName}</p>
+              )}
             </div>
             
             <div>
@@ -187,8 +248,13 @@ export default function CheckoutForm() {
                 required
                 value={formData.lastName}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded bg-gray-50"
+                className={`w-full p-3 border ${formErrors.lastName ? 'border-red-500' : 'border-gray-300'} rounded bg-gray-50`}
+                aria-invalid={!!formErrors.lastName}
+                aria-describedby={formErrors.lastName ? "lastName-error" : undefined}
               />
+              {formErrors.lastName && (
+                <p id="lastName-error" className="text-red-500 text-sm mt-1">{formErrors.lastName}</p>
+              )}
             </div>
           </div>
           
@@ -217,8 +283,13 @@ export default function CheckoutForm() {
               required
               value={formData.streetAddress}
               onChange={handleInputChange}
-              className="w-full p-3 border border-gray-300 rounded bg-gray-50"
+              className={`w-full p-3 border ${formErrors.streetAddress ? 'border-red-500' : 'border-gray-300'} rounded bg-gray-50`}
+              aria-invalid={!!formErrors.streetAddress}
+              aria-describedby={formErrors.streetAddress ? "streetAddress-error" : undefined}
             />
+            {formErrors.streetAddress && (
+              <p id="streetAddress-error" className="text-red-500 text-sm mt-1">{formErrors.streetAddress}</p>
+            )}
           </div>
           
           <div className="mb-4">
@@ -246,8 +317,13 @@ export default function CheckoutForm() {
               required
               value={formData.townCity}
               onChange={handleInputChange}
-              className="w-full p-3 border border-gray-300 rounded bg-gray-50"
+              className={`w-full p-3 border ${formErrors.townCity ? 'border-red-500' : 'border-gray-300'} rounded bg-gray-50`}
+              aria-invalid={!!formErrors.townCity}
+              aria-describedby={formErrors.townCity ? "townCity-error" : undefined}
             />
+            {formErrors.townCity && (
+              <p id="townCity-error" className="text-red-500 text-sm mt-1">{formErrors.townCity}</p>
+            )}
           </div>
           
           <div className="mb-4">
@@ -261,8 +337,13 @@ export default function CheckoutForm() {
               required
               value={formData.phoneNumber}
               onChange={handleInputChange}
-              className="w-full p-3 border border-gray-300 rounded bg-gray-50"
+              className={`w-full p-3 border ${formErrors.phoneNumber ? 'border-red-500' : 'border-gray-300'} rounded bg-gray-50`}
+              aria-invalid={!!formErrors.phoneNumber}
+              aria-describedby={formErrors.phoneNumber ? "phoneNumber-error" : undefined}
             />
+            {formErrors.phoneNumber && (
+              <p id="phoneNumber-error" className="text-red-500 text-sm mt-1">{formErrors.phoneNumber}</p>
+            )}
           </div>
           
           <div className="mb-6">
@@ -276,8 +357,13 @@ export default function CheckoutForm() {
               required
               value={formData.emailAddress}
               onChange={handleInputChange}
-              className="w-full p-3 border border-gray-300 rounded bg-gray-50"
+              className={`w-full p-3 border ${formErrors.emailAddress ? 'border-red-500' : 'border-gray-300'} rounded bg-gray-50`}
+              aria-invalid={!!formErrors.emailAddress}
+              aria-describedby={formErrors.emailAddress ? "emailAddress-error" : undefined}
             />
+            {formErrors.emailAddress && (
+              <p id="emailAddress-error" className="text-red-500 text-sm mt-1">{formErrors.emailAddress}</p>
+            )}
           </div>
           
           <div className="mb-8">
@@ -401,14 +487,24 @@ export default function CheckoutForm() {
         {/* Place Order Button */}
         <button
           onClick={handleSubmit}
+          disabled={!isOrderButtonEnabled}
           className={`w-full py-3 rounded font-medium transition-colors ${
-            isAuthenticated 
+            isOrderButtonEnabled 
               ? "bg-red-500 text-white hover:bg-red-600" 
               : "bg-gray-300 text-gray-600 cursor-not-allowed"
           }`}
         >
-          {isAuthenticated ? "Place Order" : "Sign in to Place Order"}
+          {isAuthenticated ? 
+            (isFormComplete() ? "Place Order" : "Complete Required Fields") : 
+            "Sign in to Place Order"}
         </button>
+        
+        {/* Form completion notice */}
+        {isAuthenticated && !isFormComplete() && (
+          <p className="text-sm text-red-500 mt-2 text-center">
+            Please fill in all required fields marked with *
+          </p>
+        )}
         
         {/* Authentication notice */}
         {!isAuthenticated && (
