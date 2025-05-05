@@ -1,15 +1,19 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import ProfileForm from './ProfileForm';
 
 export default function AccountClient() {
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setLoading(true);
       if (user) {
         const [firstName, lastName] = (user.displayName || '').split(' ');
         setUserData({
@@ -18,17 +22,36 @@ export default function AccountClient() {
           email: user.email || '',
           address: '' 
         });
+      } else {
+        // No user is signed in, redirect to login with return path
+        router.push(`/login?redirect=${encodeURIComponent('/account')}`);
+        return;
       }
+      setLoading(false);
     });
     return () => unsubscribe();
-  }, []);
+  }, [router]);
 
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
+        <div className="w-16 h-16 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // If we're not loading and no user data, something went wrong
+  // This is a fallback in case the router.push doesn't redirect immediately
   if (!userData) {
     return (
-        <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
-          <div className="w-16 h-16 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      );
+      <div className="fixed inset-0 bg-white flex flex-col items-center justify-center z-50">
+        <p className="mb-4">Please sign in to access your account</p>
+        <Link href="/login" className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+          Go to Login
+        </Link>
+      </div>
+    );
   }
 
   return (
